@@ -1,5 +1,5 @@
-import DashboardFeature from '@/components/dashboard/dashboard-feature'
+import PayFluxFeature from '@/components/PayFlux/PayFlux-feature';
 
-export default function Page() {
-  return <DashboardFeature />
+export default function Home() {
+  return <PayFluxFeature />;
 }
