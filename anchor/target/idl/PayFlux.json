@@ -8,150 +8,272 @@
   },
   "instructions": [
     {
-      "name": "close",
+      "name": "create_payment",
       "discriminator": [
-        98,
-        165,
-        201,
-        177,
-        108,
-        65,
-        206,
-        96
+        28,
+        81,
+        85,
+        253,
+        7,
+        223,
+        154,
+        42
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "sender",
           "writable": true,
           "signer": true
         },
         {
-          "name": "PayFlux",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "PayFlux",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
-      ],
-      "accounts": [
-        {
-          "name": "PayFlux",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
-      ],
-      "accounts": [
-        {
-          "name": "payer",
+          "name": "payment_request",
           "writable": true,
-          "signer": true
-        },
-        {
-          "name": "PayFlux",
-          "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "request_id"
+              }
+            ]
+          }
         },
         {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "request_id",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "recipient_details",
+          "type": {
+            "defined": {
+              "name": "RecipientDetails"
+            }
+          }
+        }
+      ]
     },
     {
-      "name": "set",
+      "name": "fulfill_payment",
       "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
+        91,
+        23,
+        244,
+        253,
+        211,
+        9,
+        32,
+        27
       ],
       "accounts": [
         {
-          "name": "PayFlux",
+          "name": "market_maker",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payment_request",
           "writable": true
         }
       ],
-      "args": [
-        {
-          "name": "value",
-          "type": "u8"
-        }
-      ]
+      "args": []
     }
   ],
   "accounts": [
     {
-      "name": "PayFlux",
+      "name": "PaymentRequest",
       "discriminator": [
-        255,
-        176,
-        4,
-        245,
-        188,
-        253,
+        27,
+        20,
+        202,
+        96,
+        101,
+        242,
         124,
-        25
+        69
       ]
+    }
+  ],
+  "events": [
+    {
+      "name": "PaymentCreatedEvent",
+      "discriminator": [
+        220,
+        70,
+        132,
+        18,
+        89,
+        46,
+        231,
+        215
+      ]
+    },
+    {
+      "name": "PaymentFulfilledEvent",
+      "discriminator": [
+        14,
+        103,
+        118,
+        121,
+        72,
+        121,
+        245,
+        49
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidPaymentStatus",
+      "msg": "Invalid payment status for this operation"
     }
   ],
   "types": [
     {
-      "name": "PayFlux",
+      "name": "PaymentCreatedEvent",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "count",
+            "name": "request_id",
+            "type": "string"
+          },
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "recipient_details",
+            "type": {
+              "defined": {
+                "name": "RecipientDetails"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentFulfilledEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "request_id",
+            "type": "string"
+          },
+          {
+            "name": "market_maker",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentRequest",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "PaymentStatus"
+              }
+            }
+          },
+          {
+            "name": "market_maker",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "recipient_details",
+            "type": {
+              "defined": {
+                "name": "RecipientDetails"
+              }
+            }
+          },
+          {
+            "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "request_id",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Completed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RecipientDetails",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "account_number",
+            "type": "string"
+          },
+          {
+            "name": "account_name",
+            "type": "string"
+          },
+          {
+            "name": "phone_number",
+            "type": "string"
           }
         ]
       }
