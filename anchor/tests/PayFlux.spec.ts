@@ -2,6 +2,7 @@ import * as anchor from '@coral-xyz/anchor'
 import {Program} from '@coral-xyz/anchor'
 import {Keypair} from '@solana/web3.js'
 import {PayFlux} from '../target/types/PayFlux'
+import { createHash } from "crypto";
 
 describe('PayFlux', () => {
   // Configure the client to use the local cluster.
@@ -12,6 +13,16 @@ describe('PayFlux', () => {
   const program = anchor.workspace.PayFlux as Program<PayFlux>
 
   const PayFluxKeypair = Keypair.generate()
+
+  function sighash(nameSpace: string, name: string): Buffer {
+    const preimage = `${nameSpace}:${name}`;
+    return Buffer.from(
+      createHash("sha256")
+        .update(preimage)
+        .digest()
+        .slice(0, 8)
+    );
+  }
 
   it('Initialize PayFlux', async () => {
     await program.methods
@@ -73,4 +84,12 @@ describe('PayFlux', () => {
     const userAccount = await program.account.PayFlux.fetchNullable(PayFluxKeypair.publicKey)
     expect(userAccount).toBeNull()
   })
+
+  it('Calculate instruction discriminators', () => {
+    const createPaymentDiscriminator = sighash("global", "create_payment");
+    const fulfillPaymentDiscriminator = sighash("global", "fulfill_payment");
+
+    console.log("Create Payment Discriminator:", [...createPaymentDiscriminator]);
+    console.log("Fulfill Payment Discriminator:", [...fulfillPaymentDiscriminator]);
+  });
 })

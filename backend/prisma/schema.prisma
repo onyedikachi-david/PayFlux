@@ -1,0 +1,31 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id                String    @id @default(cuid())
+  requestId         String    @unique
+  senderWallet      String
+  receiverAccount   String
+  receiverName      String
+  receiverPhone     String
+  amountNgn         Decimal
+  marketMakerWallet String?
+  status            String    @default("PENDING") // PENDING, COMPLETED, FAILED
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  ninVerified       Boolean   @default(false)
+  ussdCode          String?
+  receiptConfirmed  Boolean   @default(false)
+
+  @@index([status])
+  @@index([senderWallet])
+  @@index([marketMakerWallet])
+} 
