@@ -1,5 +1,7 @@
 # PayFlux: A Crypto-to-Fiat Bridge
 
+![PayFlux Homepage](home-page.png)
+
 PayFlux is a decentralized application (dApp) that enables seamless conversion of cryptocurrency to fiat currency, built on the Solana blockchain and powered by Quicknode's infrastructure.
 
 ## Core Flows
